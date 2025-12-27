@@ -156,9 +156,9 @@ const Voitures = () => {
       setDialogOpen(false);
       resetForm();
       fetchVoitures();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error saving voiture:', error);
-      toast.error(error.message || 'Erreur lors de l\'enregistrement');
+      toast.error(error instanceof Error ? error.message : 'Erreur lors de l\'enregistrement');
     } finally {
       setSaving(false);
     }
@@ -193,8 +193,8 @@ const Voitures = () => {
       if (error) throw error;
       toast.success('Voiture supprimée');
       fetchVoitures();
-    } catch (error: any) {
-      toast.error(error.message || 'Erreur lors de la suppression');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erreur lors de la suppression');
     }
   };
 

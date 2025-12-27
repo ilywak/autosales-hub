@@ -92,6 +92,7 @@ const Dashboard = () => {
           chiffreAffaires
         });
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         setRecentVentes((recentData || []).map((v: any) => ({
           id: v.id,
           prix_vente: v.prix_vente,

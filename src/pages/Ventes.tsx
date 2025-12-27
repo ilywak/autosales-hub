@@ -96,6 +96,7 @@ const Ventes = () => {
         .order('date_vente', { ascending: false });
 
       if (ventesError) throw ventesError;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setVentes((ventesData || []).map((v: any) => ({
         id: v.id,
         prix_vente: v.prix_vente,
@@ -181,8 +182,8 @@ const Ventes = () => {
       setDialogOpen(false);
       resetForm();
       fetchData();
-    } catch (error: any) {
-      toast.error(error.message || 'Erreur lors de l\'enregistrement de la vente');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erreur lors de l\'enregistrement de la vente');
     } finally {
       setSaving(false);
     }

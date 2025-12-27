@@ -136,8 +136,8 @@ const Clients = () => {
       setDialogOpen(false);
       resetForm();
       fetchClients();
-    } catch (error: any) {
-      toast.error(error.message || 'Erreur lors de l\'enregistrement');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erreur lors de l\'enregistrement');
     } finally {
       setSaving(false);
     }
@@ -167,8 +167,8 @@ const Clients = () => {
       if (error) throw error;
       toast.success('Client supprimé');
       fetchClients();
-    } catch (error: any) {
-      toast.error(error.message || 'Erreur lors de la suppression');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erreur lors de la suppression');
     }
   };
 

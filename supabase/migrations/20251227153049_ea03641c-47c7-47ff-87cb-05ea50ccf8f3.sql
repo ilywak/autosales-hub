@@ -38,7 +38,7 @@ CREATE TABLE public.user_roles (
 -- Create voitures table
 CREATE TABLE public.voitures (
     id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
-    garage_id UUID NOT NULL REFERENCES public.garages(id) ON DELETE CASCADE,
+    garage_id UUID NULL REFERENCES public.garages(id) ON DELETE CASCADE,
     marque TEXT NOT NULL,
     modele TEXT NOT NULL,
     annee INTEGER NOT NULL,

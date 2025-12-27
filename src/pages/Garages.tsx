@@ -110,8 +110,8 @@ const Garages = () => {
       setDialogOpen(false);
       resetForm();
       fetchGarages();
-    } catch (error: any) {
-      toast.error(error.message || 'Erreur lors de l\'enregistrement');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erreur lors de l\'enregistrement');
     } finally {
       setSaving(false);
     }
@@ -140,8 +140,8 @@ const Garages = () => {
       if (error) throw error;
       toast.success('Garage supprimé');
       fetchGarages();
-    } catch (error: any) {
-      toast.error(error.message || 'Erreur lors de la suppression');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erreur lors de la suppression');
     }
   };
 

@@ -81,6 +81,7 @@ const Statistiques = () => {
 
         // Group by carburant
         const carburantCount: Record<string, number> = {};
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ventes.forEach((v: any) => {
           const carburant = v.voiture?.carburant || 'Inconnu';
           carburantCount[carburant] = (carburantCount[carburant] || 0) + 1;
