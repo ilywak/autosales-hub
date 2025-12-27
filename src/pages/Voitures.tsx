@@ -39,6 +39,7 @@ interface Voiture {
   couleur: string | null;
   description: string | null;
   image_url: string | null;
+  garage_id?: string;
 }
 
 const Voitures = () => {
@@ -47,6 +48,7 @@ const Voitures = () => {
   const [loading, setLoading] = useState(true);
   const [voitures, setVoitures] = useState<Voiture[]>([]);
   const [filteredVoitures, setFilteredVoitures] = useState<Voiture[]>([]);
+  const [garages, setGarages] = useState<{id: string, nom: string}[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCarburant, setFilterCarburant] = useState('all');
   const [filterDisponible, setFilterDisponible] = useState('all');
@@ -65,7 +67,8 @@ const Voitures = () => {
     etat: 'occasion',
     couleur: '',
     description: '',
-    image_url: ''
+    image_url: '',
+    garage_id: ''
   });
 
   useEffect(() => {
@@ -78,7 +81,8 @@ const Voitures = () => {
     try {
       const { data, error } = await supabase
         .from('voitures')
-        .select('*')
+        // .select('*')
+        .select()
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -92,11 +96,28 @@ const Voitures = () => {
     }
   };
 
+  const fetchGarages = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('garages')
+        .select('id, nom')
+        .order('nom');
+
+      if (error) throw error;
+      setGarages(data || []);
+    } catch (error) {
+      console.error('Error fetching garages:', error);
+    }
+  };
+
   useEffect(() => {
     if (user) {
       fetchVoitures();
+      if (role === 'admin') {
+        fetchGarages();
+      }
     }
-  }, [user]);
+  }, [user, role]);
 
   useEffect(() => {
     let filtered = voitures;
@@ -125,14 +146,21 @@ const Voitures = () => {
     setSaving(true);
 
     try {
-      if (!profile?.garage_id && role !== 'admin') {
+      if (!profile?.garage_id && role !== 'admin' && !formData.garage_id) {
         toast.error("Vous devez être assigné à un garage pour ajouter des voitures");
+        return;
+      }
+
+      const targetGarageId = role === 'admin' ? formData.garage_id : profile?.garage_id;
+
+      if (!targetGarageId) {
+        toast.error("Veuillez sélectionner un garage");
         return;
       }
 
       const voitureData = {
         ...formData,
-        garage_id: profile?.garage_id,
+        garage_id: targetGarageId,
         disponible: true
       };
 
@@ -158,13 +186,14 @@ const Voitures = () => {
       fetchVoitures();
     } catch (error) {
       console.error('Error saving voiture:', error);
-      toast.error(error instanceof Error ? error.message : 'Erreur lors de l\'enregistrement');
+      const message = error instanceof Error ? error.message : "Erreur lors de l'enregistrement";
+      toast.error(message);
     } finally {
       setSaving(false);
     }
   };
 
-  const handleEdit = (voiture: Voiture) => {
+  const handleEdit = (voiture: Voiture & { garage_id?: string }) => {
     setEditingVoiture(voiture);
     setFormData({
       marque: voiture.marque,
@@ -176,7 +205,8 @@ const Voitures = () => {
       etat: voiture.etat,
       couleur: voiture.couleur || '',
       description: voiture.description || '',
-      image_url: voiture.image_url || ''
+      image_url: voiture.image_url || '',
+      garage_id: voiture.garage_id || ''
     });
     setDialogOpen(true);
   };
@@ -210,7 +240,8 @@ const Voitures = () => {
       etat: 'occasion',
       couleur: '',
       description: '',
-      image_url: ''
+      image_url: '',
+      garage_id: ''
     });
   };
 
@@ -270,6 +301,26 @@ const Voitures = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  {role === 'admin' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="garage">Garage</Label>
+                      <Select
+                        value={formData.garage_id}
+                        onValueChange={(value) => setFormData({ ...formData, garage_id: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionner un garage" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {garages.map((garage) => (
+                            <SelectItem key={garage.id} value={garage.id}>
+                              {garage.nom}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="marque">Marque</Label>
