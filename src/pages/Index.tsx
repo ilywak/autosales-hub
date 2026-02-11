@@ -79,7 +79,7 @@ const Index = () => {
             <h1 className="text-4xl sm:text-5xl lg:text-7xl font-display font-bold leading-tight">
               Gérez votre garage
               <br />
-              <span className="text-gradient">comme un pro</span>
+              <span className="bg-warning text-primary-foreground font-bold px-2 rounded-full">comme un pro</span>
             </h1>
           </div>
           
